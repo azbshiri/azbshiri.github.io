@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!-- Use the title from a page's frontmatter if it has one -->
+  <title>Use a screwdriver instead of a hammer</title>
+  <link href="/stylesheets/normalize.css" rel="stylesheet" />
+  <link href="/stylesheets/highlight.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Libre+Baskerville" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet">
+  <link href="/stylesheets/site.css" rel="stylesheet" />
+  <script src="/javascripts/site.js"></script>
+</head>
+
+  <body>
+    <div class="centered">
+  <header class="header-container">
+    <div class="header-item selfie">
+      <img src="/images/header_portrait.png" style="max-width: 185px;border-radius: 50%;">
+    </div>
+    <div class="header-item">
+      <h1><a href="/">Alireza Bashiri</a></h1>
+      <p>Software developer at <a href="http://www.farmbot.io">Oozou</a></p>
+      <p>
+        <a href="https://reddit.com/u/azbshiri"><img height="24" src="/images/icons/reddit.svg"></a>
+        <a href="https://twitter.com/azbshiri"><img height="24" src="/images/icons/twitter.svg"></a>
+        <a href="https://github.com/azbshiri"><img height="24" src="/images/icons/github.svg"></a>
+        <a href="https://www.linkedin.com/in/azbshiri"><img height="24" src="/images/icons/linkedin.svg"></a>
+        <a href="https://stackoverflow.com/users/4794989/alireza-bashiri"><img height="24" src="/images/icons/stackoverflow.svg"></a>
+      </p>
+      <p>
+        [<a href="/contact.html"> 💬 Contact </a>]
+        [<a href="/about.html"> 👤 About </a>]
+      </p>
+    </div>
+  </header>
+</div>
+<hr/>
+
+    <main>
+      <div class="blog-wrapper">
+          <h1><a href="/2019/08/12/use-a-screwdriver-instead-of-a-hammer-html.html">Use a screwdriver instead of a hammer</a></h1>
+          <article>
+            <p><img src="https://cdn11.bigcommerce.com/s-jyvxk5hzsq/images/stencil/500x659/products/5811/43785/6533L__05321.1539348308.jpg?c=2&amp;imbypass=on" alt="6533l  05321.1539348308" /></p>
+
+<p>Here&rsquo;s a simple snippet of &ldquo;gross over-engineering&rdquo; in Python instead of a shell oneliner.</p>
+<div class="highlight"><pre class="highlight diff"><code><span class="gd">-#!/usr/bin/env python3
+-"""A dmenu setxkbmap wrapper."""
+-
+-import os
+-import subprocess
+-import re
+-import sys
+-
+-dmenu_command = "dmenu"
+-setxkbmap_command = "setxkbmap"
+-
+-def current_layout():
+-    """Gets the current layout (as LAYOUT[ VARIANT])."""
+-    full_cmd = f"{setxkbmap_command} -query"
+-    code, output = subprocess.getstatusoutput(full_cmd)
+-    if code != 0:
+-        raise Exception(f"'{full_cmd}' failed")
+-
+-    match_layout = re.search(r"layout:\s+(\S+)", output)
+-    if match_layout:
+-        layout = match_layout.group(1)
+-    else:
+-        raise Exception(f"Cannot retrieve layout in '{full_cmd}' result")
+-
+-    match_variant = re.search(r"variant:\s+(\S+)", output)
+-    if match_variant:
+-        variant = match_variant.group(1)
+-        return f'{layout} {variant}'
+-
+-    return layout
+-
+-def input_layouts():
+-    """ Retrieve script input layouts."""
+-    if "LAYOUTS" in os.environ:
+-        as_string = os.environ["LAYOUTS"]
+-    else:
+-        raise Exception("LAYOUTS must be set. Try LAYOUTS=$'fr\\nfr bepo\\nus' {script}".format(script=sys.argv[0]))
+-
+-    return as_string.split('\n')
+-
+-def swap_first_input_if_current(curr_layout, in_layouts):
+-    """ Swap first and second layouts if first layout is the current one."""
+-    layouts = list(in_layouts)
+-    if len(layouts) &gt; 1:
+-        if layouts[0] == curr_layout:
+-            layouts[0], layouts[1] = layouts[1], layouts[0]
+-    return layouts
+-
+-def dmenu_setxkbmap(force_space_keymap=True):
+-    """Script main function.
+-
+-    1. Generate a dmenu input
+-    2. Call dmenu to ask user's choice
+-    3. Call setxkbmap on selected choice
+-    """
+-    # Generate the desired list of X11 layouts
+-    in_layouts = swap_first_input_if_current(current_layout(), input_layouts())
+-    layouts_as_str = '\n'.join(in_layouts).encode('utf-8')
+-
+-    # Call dmenu on our lists of layouts
+-    proc = subprocess.run([dmenu_command] + sys.argv[1:],
+-                          input=layouts_as_str,
+-                          stdout=subprocess.PIPE)
+-
+-    if proc.returncode == 0:
+-        choice = proc.stdout.decode('utf-8').strip()
+-
+-        # Call setxkbmap on selected choice
+-        returncode, _ = subprocess.getstatusoutput(f'{setxkbmap_command} {choice}')
+-        success = (returncode == 0)
+-
+-        if success and force_space_keymap:
+-            # Force keymap of the space keycode
+-            code, _ = subprocess.getstatusoutput('xmodmap -e "keycode 65 = space space space space underscore underscore space space"')
+-            success = (code == 0)
+-    else:
+-        success = False
+-
+-    return success
+-
+-if __name__ == "__main__":
+-    if dmenu_setxkbmap():
+-        sys.exit(0)
+-    else:
+-        sys.exit(1)
+</span><span class="gi">+#!/usr/bin/env bash
+</span>
+<span class="gi">+setxkbmap -query $(echo -e 'us\nir' | dmenu)
+</span></code></pre></div>
+          </article>
+      </div>
+    </main>
+  </body>
+</html>
