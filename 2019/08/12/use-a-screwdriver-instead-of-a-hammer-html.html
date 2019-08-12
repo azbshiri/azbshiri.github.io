@@ -133,6 +133,7 @@
 -    else:
 -        sys.exit(1)
 </span><span class="gi">+#!/usr/bin/env bash
++# This script will runs `dmenu` against `setxkbmap` to choose keyboard layout.
 </span>
 <span class="gi">+setxkbmap -query $(echo -e 'us\nir' | dmenu)
 </span></code></pre></div>
